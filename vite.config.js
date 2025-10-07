@@ -4,8 +4,14 @@ import path from 'path';
 
 export const vitePort = 3000;
 
+const root = '.'; // ✅ tell Vite to use the current directory as root
+
 export default defineConfig(({ mode }) => {
   return {
+     root, // ✅ use index.html from the root folder
+    build: {
+      outDir: 'dist' // ✅ where to output the production files
+    }
     plugins: [
       react(),
       // Custom plugin to handle source map requests
