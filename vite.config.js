@@ -4,15 +4,15 @@ import path from 'path';
 
 const vitePort = 3000;
 
-export default defineConfig(({ mode }) => ({
-  // ✨ Use repo root (where index.html lives), NOT client/
-  root: '.',
-  publicDir: 'public',
+export default defineConfig(() => ({
+  // ✅ Force Vite to use root where index.html is
+  root: path.resolve(process.cwd(), '.'),
+  publicDir: path.resolve(process.cwd(), 'public'),
 
   plugins: [
     react(),
 
-    // Handle source map requests that include query strings
+    // ✅ Handle source map requests cleanly
     {
       name: 'handle-source-map-requests',
       apply: 'serve',
@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
       },
     },
 
-    // Add permissive CORS headers during local dev
+    // ✅ Add CORS headers during dev
     {
       name: 'add-cors-headers',
       apply: 'serve',
@@ -41,32 +41,37 @@ export default defineConfig(({ mode }) => ({
             'Access-Control-Allow-Headers',
             'Content-Type, Authorization, X-Requested-With'
           );
+
           if (req.method === 'OPTIONS') {
             res.statusCode = 204;
             return res.end();
           }
+
           next();
         });
       },
     },
   ],
 
-  // ✅ Alias to your real src folder (not client/src)
+  // ✅ Use your real src folder (adjust if needed)
   resolve: {
     alias: {
       '@': path.resolve(process.cwd(), 'src'),
     },
   },
 
+  // ✅ Output to dist for Vercel
   build: {
-    outDir: 'dist',
+    outDir: path.resolve(process.cwd(), 'dist'),
     emptyOutDir: true,
-    // Force Rollup/Vite to use root index.html
-    rollupOptions: { input: 'index.html' },
+    rollupOptions: {
+      input: path.resolve(process.cwd(), 'index.html'), // force entry file
+    },
   },
 
   clearScreen: false,
 
+  // ✅ Local dev server config
   server: {
     hmr: { overlay: false },
     host: true,
@@ -81,8 +86,6 @@ export default defineConfig(({ mode }) => ({
     },
   },
 
-  // Dev-only source maps
   css: { devSourcemap: true },
   esbuild: { sourcemap: true },
 }));
-
